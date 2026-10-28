@@ -1,45 +1,23 @@
+# Reference only. Run install.sh to generate mounts from collector.env.
 name: sentra-collector
 services:
   collector:
-    image: ${COLLECTOR_IMAGE:-ghcr.io/seyun24/sentra-collector:v0.1.0}
+    image: ghcr.io/seyun24/sentra-collector:v0.1.0
     env_file:
       - path: ./collector.env
         format: raw
     environment:
       SENTRA_COLLECTOR_DEV_MODE: "false"
       SENTRA_COLLECTOR_EXEC_ENABLED: "false"
+      SENTRA_COLLECTOR_HOST_ROOT: /sentra-unmounted-host
       SENTRA_COLLECTOR_LOG_STATE_PATH: /var/lib/sentra/state/log.json
       SENTRA_COLLECTOR_TRACE_STATE_PATH: /var/lib/sentra/state/trace.json
-      SENTRA_COLLECTOR_HOST_ROOT: /host
-      PYTHONUNBUFFERED: "1"
-    # Native Linux only: expose host process and network counters to the collector.
-    pid: host
-    network_mode: host
     restart: unless-stopped
     read_only: true
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
-    tmpfs:
-      - /tmp:size=32m
+    tmpfs: [/tmp:size=32m]
     volumes:
       - collector-state:/var/lib/sentra/state
-      - type: bind
-        source: /var/log
-        target: /var/log
-        read_only: true
-        bind:
-          create_host_path: false
-      # Disk metrics use / and /tmp; these mounts make them refer to host filesystems.
-      - type: bind
-        source: /
-        target: /host
-        read_only: true
-        bind:
-          create_host_path: false
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
 volumes:
   collector-state:

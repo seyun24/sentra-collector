@@ -5,3 +5,6 @@ collector.env
 compose.override.yml
 __pycache__/
 *.pyc
+compose.generated.json
+compose.generated.tmp
+validate_config.??????
