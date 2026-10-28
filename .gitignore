@@ -1,0 +1,7 @@
+collector.env
+.env
+*.tar
+*.tar.gz
+compose.override.yml
+__pycache__/
+*.pyc

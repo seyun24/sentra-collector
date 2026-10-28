@@ -1,0 +1,26 @@
+diff --git a/collector/collectors/os_info.py b/collector/collectors/os_info.py
+index ac92c42..77dc670 100644
+--- a/collector/collectors/os_info.py
++++ b/collector/collectors/os_info.py
+@@ -54,7 +54,7 @@ def _disks() -> list[dict[str, int | str | float]]:
+             continue
+         seen.add(path)
+         try:
+-            usage = shutil.disk_usage(path)
++            usage = shutil.disk_usage(Path(os.getenv("SENTRA_COLLECTOR_HOST_ROOT", "/")) / path.lstrip("/"))
+         except OSError:
+             continue
+         percent = (usage.used / usage.total * 100) if usage.total else 0
+diff --git a/collector/collectors/system_metrics.py b/collector/collectors/system_metrics.py
+index e7ca4ae..cf925f3 100644
+--- a/collector/collectors/system_metrics.py
++++ b/collector/collectors/system_metrics.py
+@@ -78,7 +78,7 @@ def _disk_metrics(collected_at: str) -> list[dict[str, Any]]:
+     metrics: list[dict[str, Any]] = []
+     for mount in ("/", "/tmp"):
+         try:
+-            usage = shutil.disk_usage(mount)
++            usage = shutil.disk_usage(Path(os.getenv("SENTRA_COLLECTOR_HOST_ROOT", "/")) / mount.lstrip("/"))
+         except OSError:
+             continue
+         labels = {"mount": mount}
